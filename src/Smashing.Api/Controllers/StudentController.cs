@@ -7,49 +7,51 @@ namespace Smashing.Api.Controllers
     public class StudentController : ControllerBase
     {
         private readonly ILogger<StudentController> _logger;
-        private List<Student> posts;
+        private readonly IWriteRepository _writeRepository;
+        private readonly IReadRepository _readRepository;
+        private readonly IProducer _producer;
 
-        public StudentController(ILogger<StudentController> logger)
+        public StudentController(ILogger<StudentController> logger,
+            IWriteRepository writeRepository,
+            IReadRepository readRepository,
+            IProducer producer)
         {
             _logger = logger;
-            posts = new List<Student>();
+            _writeRepository = writeRepository;
+            _readRepository = readRepository;
+            _producer = producer;
         }
 
         [HttpGet(Name = "GetAll")]
         public async Task<ActionResult<List<Student>>> Get(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Get");
-            return Ok(posts);
+            var listagem = await _readRepository.GetAll(cancellationToken);
+            return Ok(listagem);
         }
 
         [HttpGet("{id:guid}", Name = "GetById")]
         public async Task<ActionResult<Student?>> GetById(Guid id, CancellationToken cancellationToken)
         {
             _logger.LogInformation("GetById");
-
-            return Ok(posts.FirstOrDefault(x => x.Id == id));
+            var listagem = await _readRepository.GetAll(cancellationToken);
+            return Ok(listagem.FirstOrDefault(x => x.Id == id));
         }
 
         [HttpPost(Name = "Post")]
         public async Task<ActionResult> Post(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Post");
-            posts.Add(new Student()
+            Student estudante = new Student()
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.Now,
                 Title = "Title",
                 UserName = "Name",
-            });
+            };
+            await _writeRepository.Insert(estudante, cancellationToken);
+            await _producer.Send(estudante, cancellationToken);
             return StatusCode(201);
         }
-    }
-
-    public class Student
-    {
-        public Guid Id { get; set; }
-        public string Title { get; set; }
-        public string UserName { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

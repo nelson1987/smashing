@@ -2,6 +2,9 @@
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Smashing.Api;
+using System.ComponentModel.DataAnnotations;
 
 namespace Smashing.Tests.Units
 {
@@ -11,11 +14,17 @@ namespace Smashing.Tests.Units
         private readonly StudentController _controller;
         private readonly CancellationToken token = CancellationToken.None;
         private readonly List<Student> _students;
+        private readonly Mock<IReadRepository> _readRepositoryMock;
         public StudentControllerUnitTests()
         {
             _students = _fixture.Build<Student>()
                 .CreateMany(5)
                 .ToList();
+            
+            _readRepositoryMock = _fixture.Freeze<Mock<IReadRepository>>();
+            _readRepositoryMock
+                .Setup(x => x.GetAll(token))
+                .ReturnsAsync(_students);
 
             _controller = _fixture.Build<StudentController>()
                 .OmitAutoProperties()
@@ -29,7 +38,7 @@ namespace Smashing.Tests.Units
             var result = await _controller.Get(token);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>()
+            result.Result.Should().BeOfType<OkObjectResult>()
                 .Which.Value.Should().BeEquivalentTo(_students);
         }
 
@@ -41,7 +50,7 @@ namespace Smashing.Tests.Units
             var result = await _controller.GetById(expectedStudent.Id, token);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>()
+            result.Result.Should().BeOfType<OkObjectResult>()
                 .Which.Value.Should().BeEquivalentTo(expectedStudent);
         }
 
@@ -52,7 +61,7 @@ namespace Smashing.Tests.Units
             var result = await _controller.Post(token);
 
             // Assert
-            result.Should().BeOfType<OkResult>();
+            result.Should().BeOfType<CreatedResult>();
         }
     }
 }
