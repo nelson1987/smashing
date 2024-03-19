@@ -6,28 +6,46 @@ namespace Smashing.Api.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<WeatherForecastController> _logger;
+        private List<Post> posts;
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
+            posts = new List<Post>();
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet(Name = "GetAll")]
+        public async Task<List<Post>> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return await Task.FromResult(posts);
         }
+
+        [HttpGet("{id}", Name = "GetById")]
+        public async Task<Post?> GetById(Guid id)
+        {
+            return await Task.FromResult(posts.FirstOrDefault(x => x.Id == id));
+        }
+
+        [HttpPost(Name = "GetById")]
+        public async Task Post()
+        {
+            posts.Add(new Controllers.Post()
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.Now,
+                Title = "Title",
+                UserName = "Name",
+            });
+            await Task.CompletedTask;
+        }
+    }
+
+    public class Post
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string UserName { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
