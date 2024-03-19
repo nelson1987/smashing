@@ -49,9 +49,9 @@ jobs:
     #  run: docker-compose -f "./tests/IntegrationTests/docker-compose.yml" down
     - name: Load Performance Tests
       uses: grafana/k6-action@v0.3.1
-        with:
-          filename: /k6/performance.js
-          flags: --vus 50 --duration 10s
+      with:
+        filename: /k6/performance.js
+        flags: --vus 50 --duration 10s
     # Upload Code Coverage by CodeCov  
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
