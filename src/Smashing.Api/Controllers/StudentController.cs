@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Smashing.Core;
 
 namespace Smashing.Api.Controllers
 {

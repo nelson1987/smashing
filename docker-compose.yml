@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  #api:
+  broker:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  readdata:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: readdb
+    ports:
+      - 27017:27017
+    command: mongod --auth
+    volumes:
+     - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/*.js
+
+  writedata:
+    image: mysql
+    #command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: writedb
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+    ports:
+      - 3306:3306
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

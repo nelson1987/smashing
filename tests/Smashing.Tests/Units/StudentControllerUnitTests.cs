@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Smashing.Api;
-using System.ComponentModel.DataAnnotations;
+using Smashing.Core;
 
 namespace Smashing.Tests.Units
 {

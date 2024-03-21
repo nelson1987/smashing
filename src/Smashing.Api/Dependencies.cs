@@ -1,4 +1,8 @@
-﻿namespace Smashing.Api;
+﻿using Microsoft.EntityFrameworkCore;
+using Smashing.Core;
+using Smashing.Repositories;
+
+namespace Smashing.Api;
 
 public static class Dependencies
 {
@@ -13,6 +17,11 @@ public static class Dependencies
         .AddScoped<IConsumer, Consumer>();
         return services;
 
+    }
+    public static IServiceCollection AddContexts(this IServiceCollection services, string? mysSqlConnectionString)
+    {
+        services.AddDbContext<AppDbContext>(options => options.UseMySql(mysSqlConnectionString, ServerVersion.AutoDetect(mysSqlConnectionString)));
+        return services;
     }
 }
 
@@ -60,14 +69,19 @@ public interface IWriteRepository
 public class WriteRepository : IWriteRepository
 {
     private readonly IWriteContext _context;
+    private readonly AppDbContext _dbContext;
 
-    public WriteRepository(IWriteContext context)
+    public WriteRepository(IWriteContext context,
+        AppDbContext dbContext)
     {
         _context = context;
+        _dbContext = dbContext;
     }
 
     public async Task Insert(Student student, CancellationToken cancellationToken)
     {
+        await _dbContext.Students.AddAsync(student);
+        await _dbContext.SaveChangesAsync();
         _context.Students.Add(student);
         await Task.CompletedTask;
     }
@@ -129,42 +143,5 @@ public class Consumer : IConsumer
     public async Task<StudentEvent> Consume(CancellationToken cancellationToken)
     {
         return await Task.FromResult(_eventBus.StudentEvents.Last());
-    }
-}
-
-public class StudentEvent
-{
-    public Guid Id { get; set; }
-    public string UserName { get; set; }
-    public string Title { get; set; }
-    public DateTime CreatedAt { get; set; }
-
-    public static implicit operator StudentEvent(Student v)
-    {
-        return new StudentEvent()
-        {
-            Id = v.Id,
-            UserName = v.UserName,
-            Title = v.Title,
-            CreatedAt = v.CreatedAt,
-        };
-    }
-}
-public class Student
-{
-    public Guid Id { get; set; }
-    public string UserName { get; set; }
-    public string Title { get; set; }
-    public DateTime CreatedAt { get; set; }
-
-    public static implicit operator Student(StudentEvent v)
-    {
-        return new Student()
-        {
-            Id = v.Id,
-            UserName = v.UserName,
-            Title = v.Title,
-            CreatedAt = v.CreatedAt,
-        };
     }
 }
