@@ -1,4 +1,5 @@
 ﻿namespace Smashing.Core;
+
 public class StudentEvent
 {
     public Guid Id { get; set; }
@@ -8,15 +9,16 @@ public class StudentEvent
 
     public static implicit operator StudentEvent(Student v)
     {
-        return new StudentEvent()
+        return new StudentEvent
         {
             Id = v.Id,
             UserName = v.UserName,
             Title = v.Title,
-            CreatedAt = v.CreatedAt,
+            CreatedAt = v.CreatedAt
         };
     }
 }
+
 public class Student
 {
     public Guid Id { get; set; }
@@ -26,12 +28,28 @@ public class Student
 
     public static implicit operator Student(StudentEvent v)
     {
-        return new Student()
+        return new Student
         {
             Id = v.Id,
             UserName = v.UserName,
             Title = v.Title,
-            CreatedAt = v.CreatedAt,
+            CreatedAt = v.CreatedAt
         };
     }
+
+    public static implicit operator Student(InclusaoTransferenciaCommand v)
+    {
+        return new Student
+        {
+            Id = Guid.NewGuid() //,
+            // UserName = v.UserName,
+            // Title = v.Title,
+            // CreatedAt = v.CreatedAt,
+        };
+    }
+}
+
+public record InclusaoTransferenciaCommand
+{
+    public decimal Valor { get; init; }
 }

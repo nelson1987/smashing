@@ -1,40 +1,41 @@
 ﻿using FluentResults;
 using FluentValidation;
 
-namespace Smashing.Core.Features.Movements
+namespace Smashing.Core.Features.Movements;
+
+public class InclusaoTransferenciaCommandValidator : AbstractValidator<InclusaoTransferenciaCommand>
 {
-    public record InclusaoTransferenciaCommand
+    public InclusaoTransferenciaCommandValidator()
     {
-        public decimal Valor { get; init; }
+        RuleFor(x => x.Valor).NotEmpty();
     }
-    public class InclusaoTransferenciaCommandValidator : AbstractValidator<InclusaoTransferenciaCommand> 
+}
+
+public interface IInclusaoTransferenciaCommandHandler
+{
+    Task<Result> Handle(InclusaoTransferenciaCommand command, CancellationToken cancellationToken);
+}
+
+public class InclusaoTransferenciaCommandHandler : IInclusaoTransferenciaCommandHandler
+{
+    private readonly IProducer _producer;
+    private readonly IReadRepository _readRepository;
+    private readonly IWriteRepository _writeRepository;
+
+    public InclusaoTransferenciaCommandHandler(IWriteRepository writeRepository, IReadRepository readRepository,
+        IProducer producer)
     {
-        public InclusaoTransferenciaCommandValidator()
-        {
-            RuleFor(x => x.Valor).NotEmpty();
-        }
+        _writeRepository = writeRepository;
+        _readRepository = readRepository;
+        _producer = producer;
     }
 
-    public interface IInclusaoTransferenciaCommandHandler
+    public async Task<Result> Handle(InclusaoTransferenciaCommand command, CancellationToken cancellationToken)
     {
-        Task<Result> Handle(InclusaoTransferenciaCommand command, CancellationToken cancellationToken);
-    }
-    public class InclusaoTransferenciaCommandHandler : IInclusaoTransferenciaCommandHandler
-    {
-        private readonly IWriteRepository _writeRepository;
-        private readonly IReadRepository _readRepository;
-        private readonly IProducer _producer;
-
-        public InclusaoTransferenciaCommandHandler(IWriteRepository writeRepository, IReadRepository readRepository, IProducer producer)
-        {
-            _writeRepository = writeRepository;
-            _readRepository = readRepository;
-            _producer = producer;
-        }
-
-        public async Task<Result> Handle(InclusaoTransferenciaCommand command, CancellationToken cancellationToken) 
-        {
-            return Result.Ok();
-        }
+        Student aluno = command;
+        await _writeRepository.Insert(aluno, cancellationToken);
+        StudentEvent @event = aluno;
+        await _producer.Send(@event, cancellationToken);
+        return Result.Ok();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Smashing.Core;
 
 namespace Smashing.Repositories
 {

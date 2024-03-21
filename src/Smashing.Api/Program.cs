@@ -1,12 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDependencies();
 var mySqlConnectionString = builder
-                   .Configuration
-                   .GetConnectionString("mysql");
+    .Configuration
+    .GetConnectionString("mysql");
 
 builder.Services.AddContexts(mySqlConnectionString);
 builder.Services.AddControllers();

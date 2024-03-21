@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Smashing.Repositories;
 
 namespace Smashing.Core;
 
@@ -9,18 +8,19 @@ public static class Dependencies
     public static IServiceCollection AddDependencies(this IServiceCollection services)
     {
         services.AddSingleton<IWriteContext, WriteContext>()
-        .AddSingleton<IReadContext, ReadContext>()
-        .AddSingleton<IEventBus, EventBus>()
-        .AddScoped<IWriteRepository, WriteRepository>()
-        .AddScoped<IReadRepository, ReadRepository>()
-        .AddScoped<IProducer, Producer>()
-        .AddScoped<IConsumer, Consumer>();
+            .AddSingleton<IReadContext, ReadContext>()
+            .AddSingleton<IEventBus, EventBus>()
+            .AddScoped<IWriteRepository, WriteRepository>()
+            .AddScoped<IReadRepository, ReadRepository>()
+            .AddScoped<IProducer, Producer>()
+            .AddScoped<IConsumer, Consumer>();
         return services;
-
     }
+
     public static IServiceCollection AddContexts(this IServiceCollection services, string? mysSqlConnectionString)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseMySql(mysSqlConnectionString, ServerVersion.AutoDetect(mysSqlConnectionString)));
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseMySql(mysSqlConnectionString, ServerVersion.AutoDetect(mysSqlConnectionString)));
         return services;
     }
 }
@@ -29,43 +29,52 @@ public interface IWriteContext
 {
     List<Student> Students { get; set; }
 }
+
 public class WriteContext : IWriteContext
 {
-    public List<Student> Students { get; set; }
     public WriteContext()
     {
         Students = new List<Student>();
     }
+
+    public List<Student> Students { get; set; }
 }
+
 public interface IReadContext
 {
     List<Student> Students { get; set; }
 }
+
 public class ReadContext : IReadContext
 {
-    public List<Student> Students { get; set; }
     public ReadContext()
     {
         Students = new List<Student>();
     }
+
+    public List<Student> Students { get; set; }
 }
+
 public interface IEventBus
 {
     List<StudentEvent> StudentEvents { get; set; }
 }
+
 public class EventBus : IEventBus
 {
-    public List<StudentEvent> StudentEvents { get; set; }
     public EventBus()
     {
         StudentEvents = new List<StudentEvent>();
     }
+
+    public List<StudentEvent> StudentEvents { get; set; }
 }
 
 public interface IWriteRepository
 {
     Task Insert(Student student, CancellationToken cancellationToken);
 }
+
 public class WriteRepository : IWriteRepository
 {
     private readonly IWriteContext _context;
@@ -86,10 +95,12 @@ public class WriteRepository : IWriteRepository
         await Task.CompletedTask;
     }
 }
+
 public interface IReadRepository
 {
     Task<List<Student>> GetAll(CancellationToken cancellationToken);
 }
+
 public class ReadRepository : IReadRepository
 {
     private readonly IReadContext _context;
@@ -109,6 +120,7 @@ public interface IProducer
 {
     Task Send(StudentEvent @event, CancellationToken cancellationToken);
 }
+
 public class Producer : IProducer
 {
     private readonly IEventBus _eventBus;
@@ -120,6 +132,7 @@ public class Producer : IProducer
         _eventBus = eventBus;
         _readContext = readContext;
     }
+
     public async Task Send(StudentEvent @event, CancellationToken cancellationToken)
     {
         _eventBus.StudentEvents.Add(@event);
@@ -127,10 +140,12 @@ public class Producer : IProducer
         await Task.CompletedTask;
     }
 }
+
 public interface IConsumer
 {
     Task<StudentEvent> Consume(CancellationToken cancellationToken);
 }
+
 public class Consumer : IConsumer
 {
     private readonly IEventBus _eventBus;

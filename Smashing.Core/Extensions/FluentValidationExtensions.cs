@@ -1,27 +1,29 @@
-﻿using FluentValidation.Results;
-using System.Web.Http.ModelBinding;
+﻿using System.Web.Http.ModelBinding;
+using FluentValidation.Results;
 
-namespace Smashing.Core.Extensions
+namespace Smashing.Core.Extensions;
+
+public static class FluentValidationExtensions
 {
-    public static class FluentValidationExtensions
+    public static bool IsInvalid(this ValidationResult result)
     {
-        public static bool IsInvalid(this ValidationResult result) => !result.IsValid;
+        return !result.IsValid;
+    }
 
-        public static ModelStateDictionary ToModelState(this ValidationResult result)
-        {
-            var modelState = new ModelStateDictionary();
+    public static ModelStateDictionary ToModelState(this ValidationResult result)
+    {
+        var modelState = new ModelStateDictionary();
 
-            foreach (var error in result.Errors)
-                modelState.AddModelError(error.PropertyName, error.ErrorMessage);
-            return modelState;
-        }
+        foreach (var error in result.Errors)
+            modelState.AddModelError(error.PropertyName, error.ErrorMessage);
+        return modelState;
+    }
 
-        public static ModelStateDictionary ToModelState(this ValidationFailure result)
-        {
-            var modelState = new ModelStateDictionary();
-            modelState.AddModelError(result.PropertyName, result.ErrorMessage);
+    public static ModelStateDictionary ToModelState(this ValidationFailure result)
+    {
+        var modelState = new ModelStateDictionary();
+        modelState.AddModelError(result.PropertyName, result.ErrorMessage);
 
-            return modelState;
-        }
+        return modelState;
     }
 }
