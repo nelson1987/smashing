@@ -13,7 +13,7 @@ public class StudentControllerUnitTests
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = true });
     private readonly Mock<IReadRepository> _readRepositoryMock;
     private readonly List<Student> _students;
-    private readonly CancellationToken token = CancellationToken.None;
+    private readonly CancellationToken _token = CancellationToken.None;
 
     public StudentControllerUnitTests()
     {
@@ -23,7 +23,7 @@ public class StudentControllerUnitTests
 
         _readRepositoryMock = _fixture.Freeze<Mock<IReadRepository>>();
         _readRepositoryMock
-            .Setup(x => x.GetAll(token))
+            .Setup(x => x.GetAll(_token))
             .ReturnsAsync(_students);
 
         _controller = _fixture.Build<StudentController>()
@@ -35,7 +35,7 @@ public class StudentControllerUnitTests
     public async Task Dado_Request_Valido_Metodo_Get_Retorno_200Ok()
     {
         // Act
-        var result = await _controller.Get(token);
+        var result = await _controller.Get(_token);
 
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>()
@@ -47,7 +47,7 @@ public class StudentControllerUnitTests
     {
         var expectedStudent = _students.First();
         // Act
-        var result = await _controller.GetById(expectedStudent.Id, token);
+        var result = await _controller.GetById(expectedStudent.Id, _token);
 
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>()
@@ -58,7 +58,7 @@ public class StudentControllerUnitTests
     public async Task Dado_Request_Valido_Metodo_Post_Retorno_200Ok()
     {
         // Act
-        var result = await _controller.Post(token);
+        var result = await _controller.Post(_token);
 
         // Assert
         result.Should().BeOfType<CreatedResult>();
