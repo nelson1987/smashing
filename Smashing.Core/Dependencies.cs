@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Smashing.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Smashing.Repositories;
 
-namespace Smashing.Api;
+namespace Smashing.Core;
 
 public static class Dependencies
 {

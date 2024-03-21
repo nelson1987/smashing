@@ -1,0 +1,23 @@
+﻿using FluentResults;
+using FluentValidation.Results;
+
+namespace Smashing.Core.Extensions
+{
+    public static class FluentResultsExtensions
+    {
+        public record Error(string Message, IDictionary<string, object>? Metadata);
+        public record ErrorResponse(Error[] Errors);
+
+        public static Result ToFailResult(this ValidationResult validationResult)
+        {
+            var errors = validationResult.Errors.Select(x => new FluentResults.Error(x.ErrorMessage)
+                .WithMetadata(nameof(x.PropertyName), x.PropertyName)
+                .WithMetadata(nameof(x.AttemptedValue), x.AttemptedValue));
+
+            return Result.Fail(errors);
+        }
+        public static string[] GetErrorsMessage(this ResultBase result) => result.Errors.Select(x => x.Message).ToArray();
+        public static ErrorResponse ToErrorResponse(this ResultBase result, bool skipMetadata = false) =>
+            new(result.Errors.Select(x => new Error(x.Message, skipMetadata ? null : x.Metadata)).ToArray());
+    }
+}

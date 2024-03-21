@@ -52,7 +52,7 @@ namespace Smashing.Api.Controllers
             };
             await _writeRepository.Insert(estudante, cancellationToken);
             await _producer.Send(estudante, cancellationToken);
-            return StatusCode(201);
+            return Created();
         }
     }
 }

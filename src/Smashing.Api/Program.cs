@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Smashing.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 

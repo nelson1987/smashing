@@ -1,37 +1,19 @@
-﻿namespace Smashing.Core;
-public class StudentEvent
-{
-    public Guid Id { get; set; }
-    public string UserName { get; set; }
-    public string Title { get; set; }
-    public DateTime CreatedAt { get; set; }
+﻿using Microsoft.EntityFrameworkCore;
 
-    public static implicit operator StudentEvent(Student v)
-    {
-        return new StudentEvent()
-        {
-            Id = v.Id,
-            UserName = v.UserName,
-            Title = v.Title,
-            CreatedAt = v.CreatedAt,
-        };
-    }
-}
-public class Student
+namespace Smashing.Core
 {
-    public Guid Id { get; set; }
-    public string UserName { get; set; }
-    public string Title { get; set; }
-    public DateTime CreatedAt { get; set; }
-
-    public static implicit operator Student(StudentEvent v)
+    public class AppDbContext : DbContext
     {
-        return new Student()
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            Id = v.Id,
-            UserName = v.UserName,
-            Title = v.Title,
-            CreatedAt = v.CreatedAt,
-        };
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Student> Students { get; set; }
+
     }
 }
