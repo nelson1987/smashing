@@ -20,7 +20,7 @@ public class MovementController : ControllerBase
         _handler = handler;
     }
 
-    [HttpPost(Name = "Post")]
+    [HttpPost]
     public async Task<ActionResult> Post(InclusaoTransferenciaCommand command, CancellationToken cancellationToken)
     {
         //Validar transferencia válida

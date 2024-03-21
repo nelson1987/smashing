@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Smashing.Core.Features.Movements;
 
 namespace Smashing.Core;
 
@@ -13,7 +15,9 @@ public static class Dependencies
             .AddScoped<IWriteRepository, WriteRepository>()
             .AddScoped<IReadRepository, ReadRepository>()
             .AddScoped<IProducer, Producer>()
-            .AddScoped<IConsumer, Consumer>();
+            .AddScoped<IConsumer, Consumer>()
+            .AddScoped<IValidator<InclusaoTransferenciaCommand>, InclusaoTransferenciaCommandValidator>()
+            .AddScoped<IInclusaoTransferenciaCommandHandler, InclusaoTransferenciaCommandHandler>();
         return services;
     }
 
