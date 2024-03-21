@@ -45,7 +45,7 @@ public class StudentControllerUnitTests
     [Fact]
     public async Task Dado_Request_Valido_Metodo_GetById_Retorno_200Ok()
     {
-        var expectedStudent = _students.First();
+        var expectedStudent = _students[0];
         // Act
         var result = await _controller.GetById(expectedStudent.Id, _token);
 

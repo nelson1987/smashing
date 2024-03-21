@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Smashing.Core;
 using Smashing.Core.Extensions;
 using Smashing.Core.Features.Movements;
 
