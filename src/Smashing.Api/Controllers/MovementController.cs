@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Smashing.Core.Bases;
 using Smashing.Core.Extensions;
 using Smashing.Core.Features.Movements;
-using Smashing.Core.Features.Users;
 
 namespace Smashing.Api.Controllers;
 
@@ -11,10 +10,10 @@ namespace Smashing.Api.Controllers;
 [Route("api/[controller]")]
 public class MovementController : ControllerBase
 {
-    private readonly ILogger<MovementController> _logger;
-    private readonly IValidator<AddMovementCommand> _validator;
-    private readonly IReadRepository<Movement> _readRepository;
     private readonly IAddMovementCommandHandler _handler;
+    private readonly ILogger<MovementController> _logger;
+    private readonly IReadRepository<Movement> _readRepository;
+    private readonly IValidator<AddMovementCommand> _validator;
 
     public MovementController(ILogger<MovementController> logger,
         IValidator<AddMovementCommand> validator,

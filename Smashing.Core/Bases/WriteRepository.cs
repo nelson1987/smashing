@@ -12,15 +12,21 @@ public interface IWriteRepository<in T> where T : BaseEntity
 public class WriteRepository<T> : IWriteRepository<T> where T : BaseEntity
 {
     private readonly IWriteContext _context;
-    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(nameof(T));
+
     public WriteRepository(IWriteContext context)
     {
         _context = context;
     }
 
-    public async Task CreateAsync(T newBook, CancellationToken cancellationToken = default) =>
-        await _collection.InsertOneAsync(newBook);
+    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(nameof(T));
 
-    public async Task UpdateAsync(T updatedBook, CancellationToken cancellationToken = default) =>
+    public async Task CreateAsync(T newBook, CancellationToken cancellationToken = default)
+    {
+        await _collection.InsertOneAsync(newBook);
+    }
+
+    public async Task UpdateAsync(T updatedBook, CancellationToken cancellationToken = default)
+    {
         await _collection.ReplaceOneAsync(x => x.Id == updatedBook.Id, updatedBook);
+    }
 }

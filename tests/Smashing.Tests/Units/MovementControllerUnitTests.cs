@@ -12,14 +12,14 @@ namespace Smashing.Tests.Units;
 
 public class MovementControllerUnitTests
 {
+    private readonly AddMovementCommand _command;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = true });
-    private readonly CancellationToken _token = CancellationToken.None;
     private readonly Mock<IReadRepository<Movement>> _readRepositoryMock;
-    private readonly Mock<IValidator<AddMovementCommand>> _validator;
     private readonly Mock<IAddMovementCommandHandler> _resendHandler;
     private readonly List<Movement> _students;
     private readonly MovementController _sut;
-    private readonly AddMovementCommand _command;
+    private readonly CancellationToken _token = CancellationToken.None;
+    private readonly Mock<IValidator<AddMovementCommand>> _validator;
 
     public MovementControllerUnitTests()
     {
@@ -36,7 +36,7 @@ public class MovementControllerUnitTests
             .ReturnsAsync(_students[0]);
 
         _command = _fixture.Build<AddMovementCommand>()
-            .With(x =>x.Valor, 10.00M)
+            .With(x => x.Valor, 10.00M)
             .Create();
 
         _validator = _fixture.Freeze<Mock<IValidator<AddMovementCommand>>>();

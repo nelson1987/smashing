@@ -22,29 +22,39 @@ public class HomeController : Controller
         user.Password = "";
         return new
         {
-            user = user,
-            token = token
+            user, token
         };
     }
 
     [HttpGet]
     [Route("anonymous")]
     [AllowAnonymous]
-    public string Anonymous() => "Anônimo";
+    public string Anonymous()
+    {
+        return "Anônimo";
+    }
 
     [HttpGet]
     [Route("authenticated")]
     [Authorize]
-    public string Authenticated() => String.Format("Autenticado - {0}", User.Identity.Name);
+    public string Authenticated()
+    {
+        return string.Format("Autenticado - {0}", User.Identity.Name);
+    }
 
     [HttpGet]
     [Route("employee")]
     [Authorize(Roles = "employee,manager")]
-    public string Employee() => "Funcionário";
+    public string Employee()
+    {
+        return "Funcionário";
+    }
 
     [HttpGet]
     [Route("manager")]
     [Authorize(Roles = "manager")]
-    public string Manager() => "Gerente";
-
+    public string Manager()
+    {
+        return "Gerente";
+    }
 }

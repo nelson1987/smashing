@@ -10,6 +10,7 @@ public interface IWriteContext
 public class WriteContext : IWriteContext
 {
     private readonly MongoClient _mongoClient;
+
     public WriteContext(string connectionString, string databaseName)
     {
         try

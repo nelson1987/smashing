@@ -10,27 +10,27 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Integrations\MovementReadRepositoryTests.cs" />
+        <Compile Remove="Integrations\MovementReadRepositoryTests.cs"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
-        <PackageReference Include="coverlet.collector" Version="6.0.0" />
-        <PackageReference Include="FluentAssertions" Version="6.12.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.3" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-        <PackageReference Include="xunit" Version="2.5.3" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+        <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1"/>
+        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="FluentAssertions" Version="6.12.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.3"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="xunit" Version="2.5.3"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Smashing.Core\Smashing.Core.csproj" />
-        <ProjectReference Include="..\..\src\Smashing.Api\Smashing.Api.csproj" />
+        <ProjectReference Include="..\..\Smashing.Core\Smashing.Core.csproj"/>
+        <ProjectReference Include="..\..\src\Smashing.Api\Smashing.Api.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit" />
-        <Using Include="Smashing.Api.Controllers" />
+        <Using Include="Xunit"/>
+        <Using Include="Smashing.Api.Controllers"/>
     </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@ public interface IReadContext
 public class ReadContext : IReadContext
 {
     private readonly MongoClient _mongoClient;
+
     public ReadContext(string connectionString, string databaseName)
     {
         try
