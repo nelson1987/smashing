@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Smashing.Core.Bases;
 using Smashing.Core.Features.Movements;
 using Smashing.Core.Features.Users;
-using System.Text;
 
 namespace Smashing.Core;
 

@@ -59,27 +59,27 @@ public class PostDummyData
             new()
             {
                 Id = Guid.Parse("FBFF1432-05BC-4686-A888-90B86A70D07C"), Title = "test1", UserName = "test1",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
                 Id = Guid.Parse("FBFF1432-05BC-4686-A888-90B86A70D07D"), Title = "test2", UserName = "test2",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
                 Id = Guid.Parse("FBFF1432-05BC-4686-A888-90B86A70D07E"), Title = "test3", UserName = "test3",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
                 Id = Guid.Parse("FBFF1432-05BC-4686-A888-90B86A70D07F"), Title = "test4", UserName = "test4",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
                 Id = Guid.Parse("FBFF1432-05BC-4686-A888-90B86A70D07G"), Title = "test5", UserName = "test5",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             }
         };
     }
