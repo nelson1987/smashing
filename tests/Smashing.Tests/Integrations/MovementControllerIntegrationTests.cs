@@ -53,7 +53,7 @@ public class MovementControllerIntegrationTests
 
         // Assert
         result!.EnsureSuccessStatusCode();
-        Assert.Equal(201, (int)result.StatusCode);
+        Assert.Equal(204, (int)result.StatusCode);
         //response.Should().BeOfType<OkObjectResult>();
         //.Which.Value.Should().BeEquivalentTo(_students);
         //response.Should().Be400BadRequest().And

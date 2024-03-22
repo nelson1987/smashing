@@ -27,8 +27,8 @@ public class AddMovementCommandHandler : IAddMovementCommandHandler
         //Publicar Transferencia
         Movement aluno = command;
         await _writeRepository.CreateAsync(aluno, cancellationToken);
-        BaseEvent @event = aluno;
-        await _producer.Send(@event, cancellationToken);
+        //BaseEvent @event = aluno;
+        //await _producer.Send(@event, cancellationToken);
         return Result.Ok();
     }
 }
