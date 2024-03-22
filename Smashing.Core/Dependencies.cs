@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Smashing.Core.Bases;
 using Smashing.Core.Features.Movements;
+using Smashing.Core.Features.Users;
+using System.Text;
 
 namespace Smashing.Core;
 
@@ -19,6 +23,7 @@ public static class Dependencies
             .AddScoped<IProducer, Producer>()
             .AddScoped<IConsumer, Consumer>();
         services.AddMovements();
+        services.AddUserAuthentication();
         return services;
     }
 

@@ -1,8 +1,7 @@
 using Smashing.Core;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
+builder.Services.AddCors();
 builder.Services.AddDependencies();
 //var mySqlConnectionString = builder
 //    .Configuration
@@ -10,7 +9,6 @@ builder.Services.AddDependencies();
 
 //builder.Services.AddContexts(mySqlConnectionString);
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,9 +22,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Smashing.Core.Bases;
 using Smashing.Core.Extensions;
 using Smashing.Core.Features.Movements;
+using Smashing.Core.Features.Users;
 
 namespace Smashing.Api.Controllers;
 
