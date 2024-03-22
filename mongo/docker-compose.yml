@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  broker:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  mongo:
+    container_name: container-mongodb
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: root-db
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT:-mongodb}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongodb}
+      SALES_PASSWORD: ${SALES_PASSWORD:-sales}
+      WAREHOUSE_PASSWORD: ${WAREHOUSE_PASSWORD:-warehouse}
+    volumes:
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
