@@ -11,19 +11,19 @@ public class StudentControllerUnitTests
 {
     private readonly StudentController _controller;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = true });
-    private readonly Mock<IReadRepository> _readRepositoryMock;
-    private readonly List<BaseEntity> _students;
+    private readonly Mock<IReadRepository<Movement>> _readRepositoryMock;
+    private readonly List<Movement> _students;
     private readonly CancellationToken _token = CancellationToken.None;
 
     public StudentControllerUnitTests()
     {
-        _students = _fixture.Build<BaseEntity>()
+        _students = _fixture.Build<Movement>()
             .CreateMany(5)
             .ToList();
 
-        _readRepositoryMock = _fixture.Freeze<Mock<IReadRepository>>();
+        _readRepositoryMock = _fixture.Freeze<Mock<IReadRepository<Movement>>>();
         _readRepositoryMock
-            .Setup(x => x.GetAll(_token))
+            .Setup(x => x.GetAsync(_token))
             .ReturnsAsync(_students);
 
         _controller = _fixture.Build<StudentController>()

@@ -10,13 +10,15 @@ public static class Dependencies
     public static IServiceCollection AddDependencies(this IServiceCollection services)
     {
         var mongoConn = "mongodb://root:example@localhost:27017/";
-        var mongoDbConnRead = "read";
-        var mongoDbConnWrite = "write";
+        var mongoDbConnRead = "sales";
+        var mongoDbConnWrite = "sales";
         services.AddSingleton<IWriteContext, WriteContext>(x => new WriteContext(mongoConn, mongoDbConnRead))
             .AddSingleton<IReadContext, ReadContext>(x => new ReadContext(mongoConn, mongoDbConnWrite))
             .AddSingleton<IEventBus, EventBus>()
-            .AddScoped<IWriteRepository, WriteRepository>()
-            .AddScoped<IReadRepository, ReadRepository>()
+            .AddScoped<IWriteRepository<Movement>, MovementWriteRepository>()
+            .AddScoped<IReadRepository<Movement>, MovementReadRepository>()
+            .AddScoped<IWriteRepository<BaseEntity>, WriteRepository<BaseEntity>>()
+            .AddScoped<IReadRepository<BaseEntity>, ReadRepository<BaseEntity>>()
             .AddScoped<IProducer, Producer>()
             .AddScoped<IConsumer, Consumer>()
             .AddScoped<IValidator<AddMovementCommand>, AddMovementCommandValidator>()
@@ -34,48 +36,50 @@ public static class Dependencies
 
 public interface IWriteContext
 {
-    IMongoCollection<BaseEntity> Students { get; }
+    IMongoDatabase Database { get; }
 }
 
 public class WriteContext : IWriteContext
 {
+    private readonly MongoClient _mongoClient;
     public WriteContext(string connectionString, string databaseName)
     {
         try
         {
-            var mongoClient = new MongoClient(connectionString);
-            _database = mongoClient.GetDatabase(databaseName);
+            _mongoClient = new MongoClient(connectionString);
+            Database = _mongoClient.GetDatabase(databaseName);
         }
         catch (Exception ex)
         {
             throw new Exception("Não foi possível se conectar com o servidor.", ex);
         }
     }
-    private readonly IMongoDatabase _database;
-    public IMongoCollection<BaseEntity> Students => _database.GetCollection<BaseEntity>(nameof(BaseEntity));
+
+    public IMongoDatabase Database { get; }
 }
 
 public interface IReadContext
 {
-    IMongoCollection<BaseEntity> Students { get; }
+    IMongoDatabase Database { get; }
 }
 
 public class ReadContext : IReadContext
 {
+    private readonly MongoClient _mongoClient;
     public ReadContext(string connectionString, string databaseName)
     {
         try
         {
-            var mongoClient = new MongoClient(connectionString);
-            _database = mongoClient.GetDatabase(databaseName);
+            _mongoClient = new MongoClient(connectionString);
+            Database = _mongoClient.GetDatabase(databaseName);
         }
         catch (Exception ex)
         {
             throw new Exception("Não foi possível se conectar com o servidor.", ex);
         }
     }
-    private readonly IMongoDatabase _database;
-    public IMongoCollection<BaseEntity> Students => _database.GetCollection<BaseEntity>(nameof(BaseEntity));
+
+    public IMongoDatabase Database { get; }
 }
 
 public interface IEventBus
@@ -93,44 +97,49 @@ public class EventBus : IEventBus
     public List<BaseEvent> StudentEvents { get; set; }
 }
 
-public interface IWriteRepository
+public interface IWriteRepository<in T> where T : BaseEntity
 {
-    Task Insert(BaseEntity student, CancellationToken cancellationToken);
-}
+    Task CreateAsync(T newBook, CancellationToken cancellationToken = default);
 
-public class WriteRepository : IWriteRepository
+    Task UpdateAsync(T updatedBook, CancellationToken cancellationToken = default);
+}
+public class WriteRepository<T> : IWriteRepository<T> where T : BaseEntity
 {
     private readonly IWriteContext _context;
-
+    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(nameof(T));
     public WriteRepository(IWriteContext context)
     {
         _context = context;
     }
 
-    public async Task Insert(BaseEntity student, CancellationToken cancellationToken)
-    {
-        await _context.Students.InsertOneAsync(student);
-    }
+    public async Task CreateAsync(T newBook, CancellationToken cancellationToken = default) =>
+        await _collection.InsertOneAsync(newBook);
+
+    public async Task UpdateAsync(T updatedBook, CancellationToken cancellationToken = default) =>
+        await _collection.ReplaceOneAsync(x => x.Id == updatedBook.Id, updatedBook);
 }
 
-public interface IReadRepository
+public interface IReadRepository<T> where T : BaseEntity
 {
-    Task<List<BaseEntity>> GetAll(CancellationToken cancellationToken);
+    Task<List<T>> GetAsync(CancellationToken cancellationToken = default);
+    Task<T?> GetAsync(Guid id, CancellationToken cancellationToken = default);
 }
 
-public class ReadRepository : IReadRepository
+public class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
 {
     private readonly IReadContext _context;
+    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(nameof(T));
 
     public ReadRepository(IReadContext context)
     {
         _context = context;
     }
 
-    public async Task<List<BaseEntity>> GetAll(CancellationToken cancellationToken)
-    {
-        return await _context.Students.Find(_ => true).ToListAsync(cancellationToken);
-    }
+    public async Task<List<T>> GetAsync(CancellationToken cancellationToken = default) =>
+        await _collection.Find(_ => true).ToListAsync(cancellationToken);
+
+    public async Task<T?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
+        await _collection.Find(x => x.Id == id).FirstOrDefaultAsync(cancellationToken);
 }
 
 public interface IProducer
@@ -142,9 +151,9 @@ public class Producer : IProducer
 {
     private readonly IEventBus _eventBus;
 
-    private readonly IReadContext _readContext;
+    private readonly IWriteRepository<BaseEntity> _readContext;
 
-    public Producer(IEventBus eventBus, IReadContext readContext)
+    public Producer(IEventBus eventBus, IWriteRepository<BaseEntity> readContext)
     {
         _eventBus = eventBus;
         _readContext = readContext;
@@ -153,7 +162,7 @@ public class Producer : IProducer
     public async Task Send(BaseEvent @event, CancellationToken cancellationToken)
     {
         _eventBus.StudentEvents.Add(@event);
-        await _readContext.Students.InsertOneAsync(@event);
+        await _readContext.CreateAsync(@event);
     }
 }
 

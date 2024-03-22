@@ -9,12 +9,12 @@ public class StudentController : ControllerBase
 {
     private readonly ILogger<StudentController> _logger;
     private readonly IProducer _producer;
-    private readonly IReadRepository _readRepository;
-    private readonly IWriteRepository _writeRepository;
+    private readonly IReadRepository<Movement> _readRepository;
+    private readonly IWriteRepository<Movement> _writeRepository;
 
     public StudentController(ILogger<StudentController> logger,
-        IWriteRepository writeRepository,
-        IReadRepository readRepository,
+        IWriteRepository<Movement> writeRepository,
+        IReadRepository<Movement> readRepository,
         IProducer producer)
     {
         _logger = logger;
@@ -24,33 +24,33 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet(Name = "GetAll")]
-    public async Task<ActionResult<List<BaseEntity>>> Get(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<Movement>>> Get(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Get");
-        var listagem = await _readRepository.GetAll(cancellationToken);
+        var listagem = await _readRepository.GetAsync(cancellationToken);
         return Ok(listagem);
     }
 
     [HttpGet("{id:guid}", Name = "GetById")]
-    public async Task<ActionResult<BaseEntity?>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<Movement?>> GetById(Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("GetById");
-        var listagem = await _readRepository.GetAll(cancellationToken);
-        return Ok(listagem.FirstOrDefault(x => x.Id == id));
+        var listagem = await _readRepository.GetAsync(id, cancellationToken);
+        return Ok(listagem);
     }
 
     [HttpPost(Name = "Post")]
     public async Task<ActionResult> Post(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Post");
-        var estudante = new BaseEntity
+        var estudante = new Movement
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.Now,
             Title = "Title",
             UserName = "Name"
         };
-        await _writeRepository.Insert(estudante, cancellationToken);
+        await _writeRepository.CreateAsync(estudante, cancellationToken);
         await _producer.Send(estudante, cancellationToken);
         return Created();
     }

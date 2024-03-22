@@ -7,7 +7,7 @@ public class AddMovementCommandValidator : AbstractValidator<AddMovementCommand>
 {
     public AddMovementCommandValidator()
     {
-        RuleFor(x => x.Valor).NotEmpty();
+        RuleFor(x => x.Valor).GreaterThan(0);
     }
 }
 
@@ -19,9 +19,9 @@ public interface IAddMovementCommandHandler
 public class AddMovementCommandHandler : IAddMovementCommandHandler
 {
     private readonly IProducer _producer;
-    private readonly IWriteRepository _writeRepository;
+    private readonly IWriteRepository<Movement> _writeRepository;
 
-    public AddMovementCommandHandler(IWriteRepository writeRepository,
+    public AddMovementCommandHandler(IWriteRepository<Movement> writeRepository,
         IProducer producer)
     {
         _writeRepository = writeRepository;
@@ -33,8 +33,8 @@ public class AddMovementCommandHandler : IAddMovementCommandHandler
         //Buscar as contas a serem debitadas e creditadas
         //Persistir os dados
         //Publicar Transferencia
-        BaseEntity aluno = command;
-        await _writeRepository.Insert(aluno, cancellationToken);
+        Movement aluno = command;
+        await _writeRepository.CreateAsync(aluno, cancellationToken);
         BaseEvent @event = aluno;
         await _producer.Send(@event, cancellationToken);
         return Result.Ok();

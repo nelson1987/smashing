@@ -36,24 +36,36 @@ public class BaseEntity
             CreatedAt = v.CreatedAt
         };
     }
-
-    public static implicit operator BaseEntity(AddMovementCommand v)
-    {
-        return new BaseEntity
-        {
-            Id = Guid.NewGuid() //,
-            // UserName = v.UserName,
-            // Title = v.Title,
-            // CreatedAt = v.CreatedAt,
-        };
-    }
 }
 
 public record AddMovementCommand
 {
     public decimal Valor { get; init; }
 }
-public class Movement
+
+public class Movement : BaseEntity
 {
     public decimal Valor { get; init; }
+
+    public static implicit operator Movement(AddMovementCommand v)
+    {
+        return new Movement
+        {
+            Valor = v.Valor
+        };
+    }
+}
+
+public class MovementWriteRepository : WriteRepository<Movement>
+{
+    public MovementWriteRepository(IWriteContext context) : base(context)
+    {
+    }
+}
+
+public class MovementReadRepository : ReadRepository<Movement>
+{
+    public MovementReadRepository(IReadContext context) : base(context)
+    {
+    }
 }
