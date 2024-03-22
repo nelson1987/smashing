@@ -1,15 +1,15 @@
 ﻿namespace Smashing.Core;
 
-public class StudentEvent
+public class BaseEvent
 {
     public Guid Id { get; set; }
     public string UserName { get; set; }
     public string Title { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public static implicit operator StudentEvent(Student v)
+    public static implicit operator BaseEvent(BaseEntity v)
     {
-        return new StudentEvent
+        return new BaseEvent
         {
             Id = v.Id,
             UserName = v.UserName,
@@ -19,16 +19,16 @@ public class StudentEvent
     }
 }
 
-public class Student
+public class BaseEntity
 {
     public Guid Id { get; set; }
     public string UserName { get; set; }
     public string Title { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public static implicit operator Student(StudentEvent v)
+    public static implicit operator BaseEntity(BaseEvent v)
     {
-        return new Student
+        return new BaseEntity
         {
             Id = v.Id,
             UserName = v.UserName,
@@ -37,9 +37,9 @@ public class Student
         };
     }
 
-    public static implicit operator Student(InclusaoTransferenciaCommand v)
+    public static implicit operator BaseEntity(AddMovementCommand v)
     {
-        return new Student
+        return new BaseEntity
         {
             Id = Guid.NewGuid() //,
             // UserName = v.UserName,
@@ -49,7 +49,11 @@ public class Student
     }
 }
 
-public record InclusaoTransferenciaCommand
+public record AddMovementCommand
+{
+    public decimal Valor { get; init; }
+}
+public class Movement
 {
     public decimal Valor { get; init; }
 }

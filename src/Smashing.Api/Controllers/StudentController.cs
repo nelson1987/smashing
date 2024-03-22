@@ -24,7 +24,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet(Name = "GetAll")]
-    public async Task<ActionResult<List<Student>>> Get(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BaseEntity>>> Get(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Get");
         var listagem = await _readRepository.GetAll(cancellationToken);
@@ -32,7 +32,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id:guid}", Name = "GetById")]
-    public async Task<ActionResult<Student?>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<BaseEntity?>> GetById(Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("GetById");
         var listagem = await _readRepository.GetAll(cancellationToken);
@@ -43,7 +43,7 @@ public class StudentController : ControllerBase
     public async Task<ActionResult> Post(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Post");
-        var estudante = new Student
+        var estudante = new BaseEntity
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.Now,

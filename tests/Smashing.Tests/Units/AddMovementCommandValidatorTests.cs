@@ -7,18 +7,18 @@ using Smashing.Core.Features.Movements;
 
 namespace Smashing.Tests.Units;
 
-public class InclusaoTransferenciaCommandValidatorTests
+public class AddMovementCommandValidatorTests
 {
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
-    private readonly InclusaoTransferenciaCommand _renegotiationOrderRequested;
-    private readonly IValidator<InclusaoTransferenciaCommand> _validator;
+    private readonly AddMovementCommand _renegotiationOrderRequested;
+    private readonly IValidator<AddMovementCommand> _validator;
 
-    public InclusaoTransferenciaCommandValidatorTests()
+    public AddMovementCommandValidatorTests()
     {
         _renegotiationOrderRequested = _fixture
-            .Build<InclusaoTransferenciaCommand>()
+            .Build<AddMovementCommand>()
             .Create();
-        _validator = _fixture.Create<InclusaoTransferenciaCommandValidator>();
+        _validator = _fixture.Create<AddMovementCommandValidator>();
     }
 
     [Fact]

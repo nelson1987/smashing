@@ -12,12 +12,12 @@ public class StudentControllerUnitTests
     private readonly StudentController _controller;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = true });
     private readonly Mock<IReadRepository> _readRepositoryMock;
-    private readonly List<Student> _students;
+    private readonly List<BaseEntity> _students;
     private readonly CancellationToken _token = CancellationToken.None;
 
     public StudentControllerUnitTests()
     {
-        _students = _fixture.Build<Student>()
+        _students = _fixture.Build<BaseEntity>()
             .CreateMany(5)
             .ToList();
 

@@ -52,9 +52,9 @@ public class DatabaseFixture
 
 public class PostDummyData
 {
-    public IEnumerable<Student> GetAllPost()
+    public IEnumerable<BaseEntity> GetAllPost()
     {
-        return new List<Student>
+        return new List<BaseEntity>
         {
             new()
             {

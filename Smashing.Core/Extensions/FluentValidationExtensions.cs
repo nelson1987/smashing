@@ -1,5 +1,5 @@
 ﻿using FluentValidation.Results;
-using System.Web.Http.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Smashing.Core.Extensions;
 

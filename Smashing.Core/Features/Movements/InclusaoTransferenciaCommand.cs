@@ -3,38 +3,39 @@ using FluentValidation;
 
 namespace Smashing.Core.Features.Movements;
 
-public class InclusaoTransferenciaCommandValidator : AbstractValidator<InclusaoTransferenciaCommand>
+public class AddMovementCommandValidator : AbstractValidator<AddMovementCommand>
 {
-    public InclusaoTransferenciaCommandValidator()
+    public AddMovementCommandValidator()
     {
         RuleFor(x => x.Valor).NotEmpty();
     }
 }
 
-public interface IInclusaoTransferenciaCommandHandler
+public interface IAddMovementCommandHandler
 {
-    Task<Result> Handle(InclusaoTransferenciaCommand command, CancellationToken cancellationToken);
+    Task<Result> Handle(AddMovementCommand command, CancellationToken cancellationToken);
 }
 
-public class InclusaoTransferenciaCommandHandler : IInclusaoTransferenciaCommandHandler
+public class AddMovementCommandHandler : IAddMovementCommandHandler
 {
     private readonly IProducer _producer;
-    private readonly IReadRepository _readRepository;
     private readonly IWriteRepository _writeRepository;
 
-    public InclusaoTransferenciaCommandHandler(IWriteRepository writeRepository, IReadRepository readRepository,
+    public AddMovementCommandHandler(IWriteRepository writeRepository,
         IProducer producer)
     {
         _writeRepository = writeRepository;
-        _readRepository = readRepository;
         _producer = producer;
     }
 
-    public async Task<Result> Handle(InclusaoTransferenciaCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(AddMovementCommand command, CancellationToken cancellationToken)
     {
-        Student aluno = command;
+        //Buscar as contas a serem debitadas e creditadas
+        //Persistir os dados
+        //Publicar Transferencia
+        BaseEntity aluno = command;
         await _writeRepository.Insert(aluno, cancellationToken);
-        StudentEvent @event = aluno;
+        BaseEvent @event = aluno;
         await _producer.Send(@event, cancellationToken);
         return Result.Ok();
     }

@@ -15,29 +15,22 @@ services:
   readdata:
     image: mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: readdb
     ports:
       - 27017:27017
     command: mongod --auth
-    volumes:
-     - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/*.js
-
-  writedata:
-    image: mysql
-    #command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: writedb
-      MYSQL_USER: mysql
-      MYSQL_PASSWORD: mysql
-    ports:
-      - 3306:3306
+    # volumes:
+    #  - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/*.js
   
-  adminer:
-    image: adminer
+  mongo-express:
+    image: mongo-express
     restart: always
     ports:
-      - 8080:8080
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@localhost:27017/
+  

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Smashing.Core.Features.Movements;
 
 namespace Smashing.Core;
@@ -9,100 +9,113 @@ public static class Dependencies
 {
     public static IServiceCollection AddDependencies(this IServiceCollection services)
     {
-        services.AddSingleton<IWriteContext, WriteContext>()
-            .AddSingleton<IReadContext, ReadContext>()
+        var mongoConn = "mongodb://root:example@localhost:27017/";
+        var mongoDbConnRead = "read";
+        var mongoDbConnWrite = "write";
+        services.AddSingleton<IWriteContext, WriteContext>(x => new WriteContext(mongoConn, mongoDbConnRead))
+            .AddSingleton<IReadContext, ReadContext>(x => new ReadContext(mongoConn, mongoDbConnWrite))
             .AddSingleton<IEventBus, EventBus>()
             .AddScoped<IWriteRepository, WriteRepository>()
             .AddScoped<IReadRepository, ReadRepository>()
             .AddScoped<IProducer, Producer>()
             .AddScoped<IConsumer, Consumer>()
-            .AddScoped<IValidator<InclusaoTransferenciaCommand>, InclusaoTransferenciaCommandValidator>()
-            .AddScoped<IInclusaoTransferenciaCommandHandler, InclusaoTransferenciaCommandHandler>();
+            .AddScoped<IValidator<AddMovementCommand>, AddMovementCommandValidator>()
+            .AddScoped<IAddMovementCommandHandler, AddMovementCommandHandler>();
         return services;
     }
 
-    public static IServiceCollection AddContexts(this IServiceCollection services, string? mysSqlConnectionString)
-    {
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(mysSqlConnectionString, ServerVersion.AutoDetect(mysSqlConnectionString)));
-        return services;
-    }
+    //public static IServiceCollection AddContexts(this IServiceCollection services, string? mysSqlConnectionString)
+    //{
+    //    services.AddDbContext<AppDbContext>(options =>
+    //        options.UseMySql(mysSqlConnectionString, ServerVersion.AutoDetect(mysSqlConnectionString)));
+    //    return services;
+    //}
 }
 
 public interface IWriteContext
 {
-    List<Student> Students { get; set; }
+    IMongoCollection<BaseEntity> Students { get; }
 }
 
 public class WriteContext : IWriteContext
 {
-    public WriteContext()
+    public WriteContext(string connectionString, string databaseName)
     {
-        Students = new List<Student>();
+        try
+        {
+            var mongoClient = new MongoClient(connectionString);
+            _database = mongoClient.GetDatabase(databaseName);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Não foi possível se conectar com o servidor.", ex);
+        }
     }
-
-    public List<Student> Students { get; set; }
+    private readonly IMongoDatabase _database;
+    public IMongoCollection<BaseEntity> Students => _database.GetCollection<BaseEntity>(nameof(BaseEntity));
 }
 
 public interface IReadContext
 {
-    List<Student> Students { get; set; }
+    IMongoCollection<BaseEntity> Students { get; }
 }
 
 public class ReadContext : IReadContext
 {
-    public ReadContext()
+    public ReadContext(string connectionString, string databaseName)
     {
-        Students = new List<Student>();
+        try
+        {
+            var mongoClient = new MongoClient(connectionString);
+            _database = mongoClient.GetDatabase(databaseName);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Não foi possível se conectar com o servidor.", ex);
+        }
     }
-
-    public List<Student> Students { get; set; }
+    private readonly IMongoDatabase _database;
+    public IMongoCollection<BaseEntity> Students => _database.GetCollection<BaseEntity>(nameof(BaseEntity));
 }
 
 public interface IEventBus
 {
-    List<StudentEvent> StudentEvents { get; set; }
+    List<BaseEvent> StudentEvents { get; set; }
 }
 
 public class EventBus : IEventBus
 {
     public EventBus()
     {
-        StudentEvents = new List<StudentEvent>();
+        StudentEvents = new List<BaseEvent>();
     }
 
-    public List<StudentEvent> StudentEvents { get; set; }
+    public List<BaseEvent> StudentEvents { get; set; }
 }
 
 public interface IWriteRepository
 {
-    Task Insert(Student student, CancellationToken cancellationToken);
+    Task Insert(BaseEntity student, CancellationToken cancellationToken);
 }
 
 public class WriteRepository : IWriteRepository
 {
     private readonly IWriteContext _context;
-    private readonly AppDbContext _dbContext;
 
-    public WriteRepository(IWriteContext context,
-        AppDbContext dbContext)
+    public WriteRepository(IWriteContext context)
     {
         _context = context;
-        _dbContext = dbContext;
     }
 
-    public async Task Insert(Student student, CancellationToken cancellationToken)
+    public async Task Insert(BaseEntity student, CancellationToken cancellationToken)
     {
-        await _dbContext.Students.AddAsync(student);
-        await _dbContext.SaveChangesAsync();
-        _context.Students.Add(student);
-        await Task.CompletedTask;
+        await _context.Students.InsertOneAsync(student);
     }
 }
 
 public interface IReadRepository
 {
-    Task<List<Student>> GetAll(CancellationToken cancellationToken);
+    Task<List<BaseEntity>> GetAll(CancellationToken cancellationToken);
 }
 
 public class ReadRepository : IReadRepository
@@ -114,15 +127,15 @@ public class ReadRepository : IReadRepository
         _context = context;
     }
 
-    public async Task<List<Student>> GetAll(CancellationToken cancellationToken)
+    public async Task<List<BaseEntity>> GetAll(CancellationToken cancellationToken)
     {
-        return await Task.FromResult(_context.Students.ToList());
+        return await _context.Students.Find(_ => true).ToListAsync(cancellationToken);
     }
 }
 
 public interface IProducer
 {
-    Task Send(StudentEvent @event, CancellationToken cancellationToken);
+    Task Send(BaseEvent @event, CancellationToken cancellationToken);
 }
 
 public class Producer : IProducer
@@ -137,17 +150,16 @@ public class Producer : IProducer
         _readContext = readContext;
     }
 
-    public async Task Send(StudentEvent @event, CancellationToken cancellationToken)
+    public async Task Send(BaseEvent @event, CancellationToken cancellationToken)
     {
         _eventBus.StudentEvents.Add(@event);
-        _readContext.Students.Add(@event);
-        await Task.CompletedTask;
+        await _readContext.Students.InsertOneAsync(@event);
     }
 }
 
 public interface IConsumer
 {
-    Task<StudentEvent> Consume(CancellationToken cancellationToken);
+    Task<BaseEvent> Consume(CancellationToken cancellationToken);
 }
 
 public class Consumer : IConsumer
@@ -159,7 +171,7 @@ public class Consumer : IConsumer
         _eventBus = eventBus;
     }
 
-    public async Task<StudentEvent> Consume(CancellationToken cancellationToken)
+    public async Task<BaseEvent> Consume(CancellationToken cancellationToken)
     {
         return await Task.FromResult(_eventBus.StudentEvents.Last());
     }
