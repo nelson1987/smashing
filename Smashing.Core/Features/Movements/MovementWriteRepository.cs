@@ -1,4 +1,6 @@
-﻿namespace Smashing.Core.Features.Movements;
+﻿using Smashing.Core.Bases;
+
+namespace Smashing.Core.Features.Movements;
 
 public class MovementWriteRepository : WriteRepository<Movement>
 {

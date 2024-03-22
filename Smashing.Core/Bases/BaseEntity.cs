@@ -1,4 +1,4 @@
-﻿namespace Smashing.Core;
+﻿namespace Smashing.Core.Bases;
 
 public class BaseEvent
 {

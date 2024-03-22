@@ -1,4 +1,4 @@
-﻿using Smashing.Core;
+﻿using Smashing.Core.Bases;
 
 namespace Smashing.Tests;
 

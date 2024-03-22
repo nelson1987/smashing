@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Smashing.Core.Bases;
 
 namespace Smashing.Core.Features.Movements;
 

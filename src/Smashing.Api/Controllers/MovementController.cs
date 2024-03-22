@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Smashing.Core;
+using Smashing.Core.Bases;
 using Smashing.Core.Extensions;
 using Smashing.Core.Features.Movements;
 
 namespace Smashing.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class MovementController : ControllerBase
 {
     private readonly ILogger<MovementController> _logger;

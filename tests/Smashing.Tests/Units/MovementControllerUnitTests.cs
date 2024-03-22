@@ -3,7 +3,7 @@ using AutoFixture.AutoMoq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Smashing.Core;
+using Smashing.Core.Bases;
 using Smashing.Core.Features.Movements;
 
 namespace Smashing.Tests.Units;
