@@ -2,7 +2,6 @@
 using AutoFixture.AutoMoq;
 using FluentValidation;
 using FluentValidation.TestHelper;
-using Smashing.Core;
 using Smashing.Core.Features.Movements;
 
 namespace Smashing.Tests.Units;

@@ -37,35 +37,3 @@ public class BaseEntity
         };
     }
 }
-
-public record AddMovementCommand
-{
-    public decimal Valor { get; init; }
-}
-
-public class Movement : BaseEntity
-{
-    public decimal Valor { get; init; }
-
-    public static implicit operator Movement(AddMovementCommand v)
-    {
-        return new Movement
-        {
-            Valor = v.Valor
-        };
-    }
-}
-
-public class MovementWriteRepository : WriteRepository<Movement>
-{
-    public MovementWriteRepository(IWriteContext context) : base(context)
-    {
-    }
-}
-
-public class MovementReadRepository : ReadRepository<Movement>
-{
-    public MovementReadRepository(IReadContext context) : base(context)
-    {
-    }
-}

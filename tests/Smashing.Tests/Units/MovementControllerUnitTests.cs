@@ -4,18 +4,20 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Smashing.Core;
+using Smashing.Core.Features.Movements;
 
 namespace Smashing.Tests.Units;
 
-public class StudentControllerUnitTests
+public class MovementControllerUnitTests
 {
-    private readonly StudentController _controller;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization { ConfigureMembers = true });
+    private readonly MovementController _controller;
     private readonly Mock<IReadRepository<Movement>> _readRepositoryMock;
     private readonly List<Movement> _students;
     private readonly CancellationToken _token = CancellationToken.None;
+    private readonly AddMovementCommand _command;
 
-    public StudentControllerUnitTests()
+    public MovementControllerUnitTests()
     {
         _students = _fixture.Build<Movement>()
             .CreateMany(5)
@@ -25,8 +27,15 @@ public class StudentControllerUnitTests
         _readRepositoryMock
             .Setup(x => x.GetAsync(_token))
             .ReturnsAsync(_students);
+        _readRepositoryMock
+            .Setup(x => x.GetAsync(_students[0].Id, _token))
+            .ReturnsAsync(_students[0]);
 
-        _controller = _fixture.Build<StudentController>()
+        _command = _fixture.Build<AddMovementCommand>()
+            .With(x =>x.Valor, 10.00M)
+            .Create();
+
+        _controller = _fixture.Build<MovementController>()
             .OmitAutoProperties()
             .Create();
     }
@@ -58,7 +67,7 @@ public class StudentControllerUnitTests
     public async Task Dado_Request_Valido_Metodo_Post_Retorno_200Ok()
     {
         // Act
-        var result = await _controller.Post(_token);
+        var result = await _controller.Post(_command, _token);
 
         // Assert
         result.Should().BeOfType<CreatedResult>();
