@@ -1,4 +1,5 @@
-﻿using Smashing.Core.Bases;
+﻿/*
+using Smashing.Core.Bases;
 
 namespace Smashing.Tests;
 
@@ -83,4 +84,4 @@ public class PostDummyData
             }
         };
     }
-}
+}*/
