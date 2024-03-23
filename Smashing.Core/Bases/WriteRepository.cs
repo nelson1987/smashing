@@ -18,7 +18,7 @@ public class WriteRepository<T> : IWriteRepository<T> where T : BaseEntity
         _context = context;
     }
 
-    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(nameof(T));
+    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>($"{typeof(T)}");
 
     public async Task CreateAsync(T newBook, CancellationToken cancellationToken = default)
     {

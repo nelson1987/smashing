@@ -10,7 +10,7 @@ public static class Dependencies
     public static IServiceCollection AddDependencies(this IServiceCollection services)
     {
         var mongoConn = "mongodb://root:example@localhost:27017/";
-        var mongoDbConnRead = "sales";
+        var mongoDbConnRead = "warehouse";
         var mongoDbConnWrite = "sales";
         services.AddSingleton<IWriteContext, WriteContext>(x => new WriteContext(mongoConn, mongoDbConnRead))
             .AddSingleton<IReadContext, ReadContext>(x => new ReadContext(mongoConn, mongoDbConnWrite))

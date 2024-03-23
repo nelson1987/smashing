@@ -17,7 +17,7 @@ public class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
         _context = context;
     }
 
-    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(nameof(T));
+    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>($"{typeof(T)}");
 
     public async Task<List<T>> GetAsync(CancellationToken cancellationToken = default)
     {

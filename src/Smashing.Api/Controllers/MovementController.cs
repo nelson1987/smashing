@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Smashing.Core.Bases;
 using Smashing.Core.Extensions;
@@ -8,6 +9,7 @@ namespace Smashing.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class MovementController : ControllerBase
 {
     private readonly IAddMovementCommandHandler _handler;
@@ -52,9 +54,8 @@ public class MovementController : ControllerBase
             return UnprocessableEntity(validationResult.ToModelState());
 
         var result = await _handler.Handle(command, cancellationToken);
-        if (result.IsFailed)
-            return BadRequest();
-
-        return Created();
+        return result.IsFailed
+            ? BadRequest()
+            : Created();
     }
 }

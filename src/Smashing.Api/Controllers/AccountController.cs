@@ -5,13 +5,13 @@ using Smashing.Core.Features.Users;
 namespace Smashing.Api.Controllers;
 
 [ApiController]
-[Route("v1/account")]
-public class HomeController : Controller
+[Route("api/v1/[controller]")]
+public class AccountController : ControllerBase
 {
     [HttpPost]
     [Route("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<dynamic>> Authenticate([FromBody] User model)
+    public ActionResult<dynamic> Authenticate([FromBody] User model)
     {
         var user = UserRepository.Get(model.Username, model.Password);
 
@@ -22,7 +22,8 @@ public class HomeController : Controller
         user.Password = "";
         return new
         {
-            user, token
+            user,
+            token
         };
     }
 
