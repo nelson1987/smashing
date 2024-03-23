@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Smashing.Core.Bases;
 using Smashing.Core.Extensions;
@@ -8,8 +7,8 @@ using Smashing.Core.Features.Movements;
 namespace Smashing.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/[controller]s")]
+//[Authorize]
 public class MovementController : ControllerBase
 {
     private readonly IAddMovementCommandHandler _handler;

@@ -1,18 +1,18 @@
-﻿using System.Text;
-using System.Text.Json;
-using AutoFixture;
+﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using Microsoft.Extensions.DependencyInjection;
 using Smashing.Core.Bases;
 using Smashing.Core.Features.Movements;
+using System.Text;
+using System.Text.Json;
 
 namespace Smashing.Tests.Integrations;
 
 public class MovementControllerIntegrationTests
 {
-    private readonly AddMovementCommand _command;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly ApiFixture _server = new();
+    private readonly AddMovementCommand _command;
 
     public MovementControllerIntegrationTests()
     {
@@ -31,6 +31,7 @@ public class MovementControllerIntegrationTests
     [Fact]
     public async Task Given_empty_filter_should_return_Success()
     {
+
         // Act
         var response = await Client.GetAsync("api/Movement");
 
@@ -41,6 +42,15 @@ public class MovementControllerIntegrationTests
         //.Which.Value.Should().BeEquivalentTo(_students);
         //response.Should().Be400BadRequest().And
         //                 .MatchInContent("*You need at least one filter value filled.*");
+    }
+    [Fact]
+    public async Task Given_Invalid_Request_Post_Return_NotAuthorized()
+    {
+        //https://medium.com/asos-techblog/testing-authorization-scenarios-in-asp-net-core-web-api-484bc95d5f6f
+        var content = new StringContent(JsonSerializer.Serialize(_command with { Valor = 0 }),
+            Encoding.UTF8, "application/json");
+        var result = await Client.PostAsync("api/Movement", content);
+        Assert.Equal(422, (int)result!.StatusCode);
     }
 
     [Fact]

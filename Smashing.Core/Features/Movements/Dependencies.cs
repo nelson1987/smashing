@@ -12,7 +12,8 @@ public static class Dependencies
             .AddScoped<IWriteRepository<Movement>, MovementWriteRepository>()
             .AddScoped<IReadRepository<Movement>, MovementReadRepository>()
             .AddScoped<IValidator<AddMovementCommand>, AddMovementCommandValidator>()
-            .AddScoped<IAddMovementCommandHandler, AddMovementCommandHandler>();
+            .AddScoped<IAddMovementCommandHandler, AddMovementCommandHandler>()
+            .AddScoped<IHttpExternalServiceClient, HttpExternalServiceClient>();
         return services;
     }
 
