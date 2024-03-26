@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver.Core.Configuration;
+using MongoDB.Driver;
 using Smashing.Core.Bases;
 using Smashing.Core.Features.Movements;
 using Smashing.Core.Features.Users;
+using System.Threading.Tasks;
 
 namespace Smashing.Core;
 
@@ -9,31 +12,24 @@ public static class Dependencies
 {
     public static IServiceCollection AddDependencies(this IServiceCollection services)
     {
-        var mongoConn = "mongodb://root:example@localhost:27017/";
-        var mongoDbConnRead = "warehouse";
-        var mongoDbConnWrite = "sales";
-        services.AddSingleton<IWriteContext, WriteContext>(x => new WriteContext(mongoConn, mongoDbConnRead))
-            .AddSingleton<IReadContext, ReadContext>(x => new ReadContext(mongoConn, mongoDbConnWrite))
-            .AddSingleton<IEventBus, EventBus>()
-            .AddScoped<IWriteRepository<BaseEntity>, WriteRepository<BaseEntity>>(x => new WriteRepository<BaseEntity>(
-                 x.GetRequiredService<IWriteContext>(),
-                 nameof(BaseEntity)
-                ))
-            .AddScoped<IReadRepository<BaseEntity>, ReadRepository<BaseEntity>>(x => new ReadRepository<BaseEntity>(
-                 x.GetRequiredService<IReadContext>(),
-                 nameof(BaseEntity)
-                ))
-            .AddScoped<IProducer, Producer>()
-            .AddScoped<IConsumer, Consumer>();
+        var connectionString = "mongodb://root:example@localhost:27017/";
+        var client = new MongoClient(connectionString);
+
+        services.AddSingleton<IMongoWriteContextOptions, MongoWriteContextOptions>(x => new MongoWriteContextOptions
+        {
+            Database = "warehouse",
+            MongoClient = client
+        })
+            .AddSingleton<IMongoReadContextOptions, MongoReadContextOptions>(x => new MongoReadContextOptions
+            {
+                Database = "sales",
+                MongoClient = client
+            })
+            .AddScoped<IWriteContext, WriteContext>()
+            .AddScoped<IReadContext, ReadContext>()
+            .AddSingleton<IEventBus, EventBus>();
         services.AddMovements();
         services.AddUserAuthentication();
         return services;
     }
-
-    //public static IServiceCollection AddContexts(this IServiceCollection services, string? mysSqlConnectionString)
-    //{
-    //    services.AddDbContext<AppDbContext>(options =>
-    //        options.UseMySql(mysSqlConnectionString, ServerVersion.AutoDetect(mysSqlConnectionString)));
-    //    return services;
-    //}
 }

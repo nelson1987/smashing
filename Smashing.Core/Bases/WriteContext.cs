@@ -2,6 +2,26 @@
 
 namespace Smashing.Core.Bases;
 
+public interface IMongoWriteContextOptions
+{
+    MongoClient MongoClient { get; set; }
+    string Database { get; set; }
+}
+public class MongoWriteContextOptions : IMongoWriteContextOptions
+{
+    public MongoClient MongoClient { get; set; }
+    public string Database { get; set; }
+}
+public interface IMongoReadContextOptions
+{
+    MongoClient MongoClient { get; set; }
+    string Database { get; set; }
+}
+public class MongoReadContextOptions : IMongoReadContextOptions
+{
+    public MongoClient MongoClient { get; set; }
+    public string Database { get; set; }
+}
 public interface IWriteContext
 {
     IMongoDatabase Database { get; }
@@ -9,20 +29,16 @@ public interface IWriteContext
 
 public class WriteContext : IWriteContext
 {
-    private readonly MongoClient _mongoClient;
-
-    public WriteContext(string connectionString, string databaseName)
+    public IMongoDatabase Database { get; }
+    public WriteContext(MongoWriteContextOptions options)
     {
         try
         {
-            _mongoClient = new MongoClient(connectionString);
-            Database = _mongoClient.GetDatabase(databaseName);
+            Database = options.MongoClient.GetDatabase(options.Database);
         }
         catch (Exception ex)
         {
             throw new Exception("Não foi possível se conectar com o servidor.", ex);
         }
     }
-
-    public IMongoDatabase Database { get; }
 }
