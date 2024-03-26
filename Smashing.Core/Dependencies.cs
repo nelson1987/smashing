@@ -24,7 +24,7 @@ public static class Dependencies
                 Database = "sales",
                 MongoClient = client
             })
-            .AddScoped<IWriteContext, WriteContext>()
+            .AddSingleton<IWriteContext, WriteContext>()
             .AddScoped<IReadContext, ReadContext>()
             .AddSingleton<IEventBus, EventBus>();
         services.AddMovements();

@@ -17,7 +17,7 @@ public static class Dependencies
             .AddScoped<IProducerEvent<TaskoCreatedEvent>, TaskoCreatedRabbitProducer>()
             .AddScoped<IConsumerEvent<TaskoCreatedEvent>, TaskoCreatedRabbitConsumer>()
             .AddScoped<IWriteRepository<Movement>, MovementWriteRepository>()
-            .AddScoped<IWriteRepository<Tasko>, TaskoMongoRepository>()
+            .AddSingleton<IWriteRepository<Tasko>, TaskoMongoRepository>()
             .AddScoped<IReadRepository<Movement>, MovementReadRepository>()
             .AddScoped<IValidator<AddMovementCommand>, AddMovementCommandValidator>()
             .AddScoped<IAddMovementCommandHandler, AddMovementCommandHandler>()
