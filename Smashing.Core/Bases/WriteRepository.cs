@@ -12,13 +12,16 @@ public interface IWriteRepository<in T> where T : BaseEntity
 public class WriteRepository<T> : IWriteRepository<T> where T : BaseEntity
 {
     private readonly IWriteContext _context;
+    private readonly string _mongoCollection;
 
-    public WriteRepository(IWriteContext context)
+    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>(_mongoCollection);
+
+    public WriteRepository(IWriteContext context, string mongoCollection)
     {
         _context = context;
+        _mongoCollection = mongoCollection;
     }
 
-    private IMongoCollection<T> _collection => _context.Database.GetCollection<T>($"{typeof(T)}");
 
     public async Task CreateAsync(T newBook, CancellationToken cancellationToken = default)
     {

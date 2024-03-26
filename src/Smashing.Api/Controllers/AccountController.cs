@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Smashing.Core.Features.Users;
+using System.Security.Claims;
 
 namespace Smashing.Api.Controllers;
 
@@ -40,7 +41,12 @@ public class AccountController : ControllerBase
     [Authorize]
     public string Authenticated()
     {
-        return string.Format("Autenticado - {0}", User.Identity.Name);
+        var identity = (ClaimsIdentity?)User.Identity!;
+        var roles = identity.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value);
+
+        return $"Autenticado - {identity.Name} Role: {string.Join(",", roles.ToList())}";
     }
 
     [HttpGet]
@@ -48,7 +54,8 @@ public class AccountController : ControllerBase
     [Authorize(Roles = "employee,manager")]
     public string Employee()
     {
-        return "Funcionário";
+        var identity = (ClaimsIdentity?)User.Identity!;
+        return $"Funcionário{identity.Name}";
     }
 
     [HttpGet]
@@ -56,6 +63,7 @@ public class AccountController : ControllerBase
     [Authorize(Roles = "manager")]
     public string Manager()
     {
-        return "Gerente";
+        var identity = (ClaimsIdentity?)User.Identity!;
+        return $"Gerente{identity.Name}";
     }
 }

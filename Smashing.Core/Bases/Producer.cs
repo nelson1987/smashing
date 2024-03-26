@@ -8,18 +8,17 @@ public interface IProducer
 public class Producer : IProducer
 {
     private readonly IEventBus _eventBus;
-
-    private readonly IWriteRepository<BaseEntity> _readContext;
+    private readonly IWriteRepository<BaseEntity> _writeRepository;
 
     public Producer(IEventBus eventBus, IWriteRepository<BaseEntity> readContext)
     {
         _eventBus = eventBus;
-        _readContext = readContext;
+        _writeRepository = readContext;
     }
 
     public async Task Send(BaseEvent @event, CancellationToken cancellationToken)
     {
         _eventBus.StudentEvents.Add(@event);
-        await _readContext.CreateAsync(@event);
+        await _writeRepository.CreateAsync(@event);
     }
 }

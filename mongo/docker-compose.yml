@@ -25,3 +25,16 @@ services:
       WAREHOUSE_PASSWORD: ${WAREHOUSE_PASSWORD:-warehouse}
     volumes:
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  postgres:
+    image: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+     - ./scripts/base.sql:/docker-entrypoint-initdb.d/base.sql
+    ports:
+      - 5432:5432

@@ -15,8 +15,14 @@ public static class Dependencies
         services.AddSingleton<IWriteContext, WriteContext>(x => new WriteContext(mongoConn, mongoDbConnRead))
             .AddSingleton<IReadContext, ReadContext>(x => new ReadContext(mongoConn, mongoDbConnWrite))
             .AddSingleton<IEventBus, EventBus>()
-            .AddScoped<IWriteRepository<BaseEntity>, WriteRepository<BaseEntity>>()
-            .AddScoped<IReadRepository<BaseEntity>, ReadRepository<BaseEntity>>()
+            .AddScoped<IWriteRepository<BaseEntity>, WriteRepository<BaseEntity>>(x => new WriteRepository<BaseEntity>(
+                 x.GetRequiredService<IWriteContext>(),
+                 nameof(BaseEntity)
+                ))
+            .AddScoped<IReadRepository<BaseEntity>, ReadRepository<BaseEntity>>(x => new ReadRepository<BaseEntity>(
+                 x.GetRequiredService<IReadContext>(),
+                 nameof(BaseEntity)
+                ))
             .AddScoped<IProducer, Producer>()
             .AddScoped<IConsumer, Consumer>();
         services.AddMovements();
