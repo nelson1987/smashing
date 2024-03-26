@@ -9,20 +9,17 @@ public interface IReadContext
 
 public class ReadContext : IReadContext
 {
-    private readonly MongoClient _mongoClient;
+    public IMongoDatabase Database { get; }
 
-    public ReadContext(string connectionString, string databaseName)
+    public ReadContext(MongoReadContextOptions options)
     {
         try
         {
-            _mongoClient = new MongoClient(connectionString);
-            Database = _mongoClient.GetDatabase(databaseName);
+            Database = options.MongoClient.GetDatabase(options.Database);
         }
         catch (Exception ex)
         {
             throw new Exception("Não foi possível se conectar com o servidor.", ex);
         }
     }
-
-    public IMongoDatabase Database { get; }
 }

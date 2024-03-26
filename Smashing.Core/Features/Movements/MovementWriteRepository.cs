@@ -8,3 +8,9 @@ public class MovementWriteRepository : WriteRepository<Movement>
     {
     }
 }
+public class TaskoMongoRepository : WriteRepository<Tasko>
+{
+    public TaskoMongoRepository(IWriteContext context) : base(context, "Tasks")
+    {
+    }
+}

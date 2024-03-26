@@ -45,57 +45,14 @@ public static class SerializableMessageBuilder
     }
 }
 
-public class TaskoMongoRepository : MongoRepository<Tasko>
-{
-    public TaskoMongoRepository(IMongoDatabase col) : base(col, "Tasks")
-    {
-    }
-}
-
-public interface IMongoRepository<T> where T : class
-{
-    void Insert(T tasko, CancellationToken cancellationToken);
-
-    List<T> Select();
-
-    void Update(FilterDefinition<T> id, UpdateDefinition<T> tasko);
-}
-public abstract class MongoRepository<T> : IMongoRepository<T> where T : class
-{
-    private readonly IMongoCollection<T> col;
-
-    protected MongoRepository(IMongoDatabase db, string collectionName)
-    {
-        col = db.GetCollection<T>(collectionName);
-    }
-
-    public void Insert(T tasko, CancellationToken cancellationToken)
-    {
-        col.InsertOne(tasko);
-    }
-
-    public List<T> Select()
-    {
-        return col.Find(new BsonDocument()).ToList();
-    }
-
-    public void Update(FilterDefinition<T> filter, UpdateDefinition<T> tasko)
-    {
-        col.UpdateOne(filter, tasko);
-    }
-}
 public class AddTaskoCommand
 {
     public required string Detail { get; set; }
     public bool IsDone { get; set; }
     public DateTime DueDate { get; set; }
 }
-public abstract class Entity
-{
-    public Guid Id { get; set; }
-}
 
-public class Tasko : Entity
+public class Tasko : BaseEntity
 {
     public required string Detail { get; set; }
     public bool IsDone { get; set; }
@@ -131,8 +88,8 @@ public class TaskoCreatedEvent
 }
 public class TaskoCreatedRabbitConsumer : ConsumerEvent<TaskoCreatedEvent>
 {
-    public TaskoCreatedRabbitConsumer(IMongoRepository<Tasko> tasko, IConnectionFactory connection) : base(tasko, connection,
-        "hello")
+    public TaskoCreatedRabbitConsumer(IWriteRepository<Tasko> tasko, IConnectionFactory connection) 
+        : base(tasko, connection, "hello")
     {
     }
 }
@@ -185,11 +142,11 @@ public interface IConsumerEvent<T> where T : class
 }
 public abstract class ConsumerEvent<T> : IConsumerEvent<T> where T : class
 {
-    private readonly IMongoRepository<Tasko> _repository;
+    private readonly IWriteRepository<Tasko> _repository;
     private readonly IConnectionFactory connectionFactory;
     private readonly string queueName;
 
-    protected ConsumerEvent(IMongoRepository<Tasko> repository, IConnectionFactory connectionFactory, string queueName)
+    protected ConsumerEvent(IWriteRepository<Tasko> repository, IConnectionFactory connectionFactory, string queueName)
     {
         this.connectionFactory = connectionFactory;
         this.queueName = queueName;
@@ -219,11 +176,21 @@ public abstract class ConsumerEvent<T> : IConsumerEvent<T> where T : class
                               $" {tasko.IsDone}\n" +
                               $" {tasko.DueDate}\n" +
                               $" {tasko.Detail}");
-            var filter = Builders<Tasko>.Filter.Eq(x => x.Id, tasko.Id);
-            var update = Builders<Tasko>.Update
-                .Set(restaurant => restaurant.Detail, $"{tasko.Detail} - Resolvido")
-                .Set(restaurant => restaurant.IsDone, true);
-            _repository.Update(filter, update);
+            //var filter = Builders<Tasko>.Filter.Eq(x => x.Id, tasko.Id);
+            //var update = Builders<Tasko>.Update
+            //    .Set(restaurant => restaurant.Detail, $"{tasko.Detail} - Resolvido")
+            //    .Set(restaurant => restaurant.IsDone, true);
+            Tasko taskoNew = new Tasko()
+            {
+                Detail = tasko.Detail,
+                DueDate = tasko.DueDate,
+                Id = tasko.Id,
+                IsDone = true,
+                UserName = "tasko",
+                Title = "Title",
+                CreatedAt = DateTime.Now,
+            };
+            _repository.UpdateAsync(taskoNew);
         };
         channel.BasicConsume(queueName,
             true,
