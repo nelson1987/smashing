@@ -134,7 +134,7 @@ public abstract class ProducerEvent<T> : IProducerEvent<T> where T : class
 }
 public interface IProducerEvent<T> where T : class
 {
-    void Send(T tasko, CancellationToken cancellationToken);
+    void Send(T tasko, CancellationToken cancellationToken = default);
 }
 public interface IConsumerEvent<T> where T : class
 {
@@ -164,7 +164,7 @@ public abstract class ConsumerEvent<T> : IConsumerEvent<T> where T : class
             null);
 
         var consumer = new EventingBasicConsumer(channel);
-        consumer.Received += (model, ea) =>
+        consumer.Received += (_, ea) =>
         {
             var body = ea.Body.ToArray();
             Console.WriteLine($" [x] Received body {body.ConvertToJson()}");
@@ -200,7 +200,7 @@ public abstract class ConsumerEvent<T> : IConsumerEvent<T> where T : class
 }
 public interface IConsumer
 {
-    Task<BaseEvent> Consume(CancellationToken cancellationToken);
+    Task<BaseEvent> Consume(CancellationToken cancellationToken = default);
 }
 
 public class Consumer : IConsumer
@@ -212,7 +212,7 @@ public class Consumer : IConsumer
         _eventBus = eventBus;
     }
 
-    public async Task<BaseEvent> Consume(CancellationToken cancellationToken)
+    public async Task<BaseEvent> Consume(CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(_eventBus.StudentEvents.Last());
     }

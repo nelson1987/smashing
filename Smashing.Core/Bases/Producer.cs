@@ -2,7 +2,7 @@
 
 public interface IProducer
 {
-    Task Send(BaseEvent @event, CancellationToken cancellationToken);
+    Task Send(BaseEvent @event, CancellationToken cancellationToken = default);
 }
 
 public class Producer : IProducer
@@ -16,9 +16,9 @@ public class Producer : IProducer
         _writeRepository = readContext;
     }
 
-    public async Task Send(BaseEvent @event, CancellationToken cancellationToken)
+    public async Task Send(BaseEvent @event, CancellationToken cancellationToken = default)
     {
         _eventBus.StudentEvents.Add(@event);
-        await _writeRepository.CreateAsync(@event);
+        await _writeRepository.CreateAsync(@event, cancellationToken);
     }
 }

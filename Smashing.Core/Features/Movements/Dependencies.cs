@@ -9,7 +9,7 @@ public static class Dependencies
 {
     public static IServiceCollection AddMovements(this IServiceCollection services)
     {
-        services.AddSingleton<IConnectionFactory, ConnectionFactory>(x => new ConnectionFactory
+        services.AddSingleton<IConnectionFactory, ConnectionFactory>(_ => new ConnectionFactory
         {
             HostName = "localhost",
             Port = 5672

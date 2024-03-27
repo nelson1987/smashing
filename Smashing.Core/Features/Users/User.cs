@@ -17,7 +17,7 @@ public class User
 
 public static class UserRepository
 {
-    public static User Get(string username, string password)
+    public static User? Get(string username, string password)
     {
         var users = new List<User>
         {
@@ -30,7 +30,7 @@ public static class UserRepository
 
 public static class Settings
 {
-    public static string Secret = "fedaf7d8863b48e197b9287d492b708e";
+    public static readonly string Secret = "fedaf7d8863b48e197b9287d492b708e";
 }
 
 public static class TokenService

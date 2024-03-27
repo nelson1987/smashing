@@ -14,12 +14,12 @@ public static class Dependencies
         var client = new MongoClient(connectionString);
 
         services
-            .AddSingleton<IMongoWriteContextOptions, MongoWriteContextOptions>(x => new MongoWriteContextOptions
+            .AddSingleton<IMongoWriteContextOptions, MongoWriteContextOptions>(_ => new MongoWriteContextOptions
             {
                 Database = "warehouse",
                 MongoClient = client
             })
-            .AddSingleton<IMongoReadContextOptions, MongoReadContextOptions>(x => new MongoReadContextOptions
+            .AddSingleton<IMongoReadContextOptions, MongoReadContextOptions>(_ => new MongoReadContextOptions
             {
                 Database = "sales",
                 MongoClient = client

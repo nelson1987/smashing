@@ -2,7 +2,7 @@
 
 public interface IEventBus
 {
-    List<BaseEvent> StudentEvents { get; set; }
+    List<BaseEvent> StudentEvents { get; }
 }
 
 public class EventBus : IEventBus

@@ -36,7 +36,7 @@ public class MovementControllerIntegrationTests
         var response = await Client.GetAsync("api/Movement");
 
         // Assert
-        response!.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
         Assert.Equal(200, (int)response.StatusCode);
         //response.Should().BeOfType<OkObjectResult>();
         //.Which.Value.Should().BeEquivalentTo(_students);
@@ -50,7 +50,7 @@ public class MovementControllerIntegrationTests
         var content = new StringContent(JsonSerializer.Serialize(_command with { Valor = 0 }),
             Encoding.UTF8, "application/json");
         var result = await Client.PostAsync("api/Movement", content);
-        Assert.Equal(422, (int)result!.StatusCode);
+        Assert.Equal(422, (int)result.StatusCode);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class MovementControllerIntegrationTests
         var result = await Client.PostAsync("api/Movement", content);
 
         // Assert
-        result!.EnsureSuccessStatusCode();
+        result.EnsureSuccessStatusCode();
         Assert.Equal(204, (int)result.StatusCode);
         //response.Should().BeOfType<OkObjectResult>();
         //.Which.Value.Should().BeEquivalentTo(_students);
@@ -76,6 +76,6 @@ public class MovementControllerIntegrationTests
         var content = new StringContent(JsonSerializer.Serialize(_command with { Valor = 0 }),
             Encoding.UTF8, "application/json");
         var result = await Client.PostAsync("api/Movement", content);
-        Assert.Equal(422, (int)result!.StatusCode);
+        Assert.Equal(422, (int)result.StatusCode);
     }
 }
